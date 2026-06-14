@@ -1,1 +1,23 @@
-node_modules
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# Database
+*.db
+
+# Vector DB
+vector_db/
+
+# Frontend
+node_modules/
+dist/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
