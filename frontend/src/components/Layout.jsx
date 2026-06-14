@@ -15,6 +15,7 @@ export default function Layout({ children }) {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const initials = (user.name || user.email || 'U').slice(0, 2).toUpperCase();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     setLoggingOut(true);
@@ -25,9 +26,25 @@ export default function Layout({ children }) {
     }, 300);
   };
 
+  const handleNav = (path) => {
+    navigate(path);
+    setSidebarOpen(false);
+  };
+
   return (
     <div className="app-layout">
-      <aside className="sidebar">
+      {/* Mobile hamburger */}
+      <button className="mobile-toggle" onClick={() => setSidebarOpen(true)}>
+        ☰
+      </button>
+
+      {/* Sidebar overlay for mobile */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo-icon">🎓</div>
           <span className="sidebar-logo-text">CampusGPT</span>
@@ -38,25 +55,33 @@ export default function Layout({ children }) {
             <button
               key={item.path}
               className={`sidebar-item ${location.pathname === item.path ? 'active' : ''}`}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNav(item.path)}
             >
               <span className="sidebar-item-icon">{item.icon}</span>
               {item.label}
             </button>
           ))}
           <span className="sidebar-section-label" style={{ marginTop: 12 }}>Account</span>
-          <button className="sidebar-item" onClick={handleLogout} style={{ opacity: loggingOut ? 0.5 : 1 }}>
+          <button
+            className="sidebar-item"
+            onClick={handleLogout}
+            style={{ opacity: loggingOut ? 0.5 : 1 }}
+          >
             <span className="sidebar-item-icon">🚪</span>
             Logout
           </button>
         </nav>
         <div className="sidebar-footer">
-          <div className="sidebar-user" onClick={() => navigate('/profile')}>
+          <div className="sidebar-user" onClick={() => handleNav('/profile')}>
             <div className="sidebar-avatar">{initials}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="sidebar-username">{user.name || 'Student'}</div>
               <div className="sidebar-useremail">{user.email || ''}</div>
             </div>
+          </div>
+          <div className="sidebar-version">
+            <span className="status-dot" />
+            Online · v1.0
           </div>
         </div>
       </aside>

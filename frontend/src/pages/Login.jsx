@@ -45,10 +45,21 @@ export default function Login() {
     }
   };
 
+  const FEATURES = [
+    { icon: '📄', title: 'Upload PDFs & Notes', bg: 'var(--gold-dim)', border: 'var(--gold-border)' },
+    { icon: '💬', title: 'AI-powered Q&A', bg: 'var(--teal-dim)', border: 'var(--teal-border)' },
+    { icon: '🔍', title: 'Smart document search', bg: 'var(--violet-dim)', border: 'rgba(167,139,250,0.2)' },
+  ];
+
   return (
     <div className="auth-page">
+      {/* Floating orbs */}
+      <div className="auth-orb auth-orb-1" />
+      <div className="auth-orb auth-orb-2" />
+      <div className="auth-orb auth-orb-3" />
+
       <ToastContainer />
-      <div className="auth-card fade-in">
+      <div className="auth-card">
         <div className="auth-logo">
           <div className="auth-logo-icon">🎓</div>
           <div>
@@ -62,7 +73,7 @@ export default function Login() {
         <p className="auth-subtitle">Sign in to access your AI university assistant</p>
 
         {errors.general && (
-          <div style={{ background:'var(--error-dim)', border:'1px solid rgba(248,113,113,0.3)', borderRadius:'var(--radius-md)', padding:'10px 14px', fontSize:'.85rem', color:'var(--error)', marginBottom:16 }}>
+          <div className="auth-error-banner">
             ⚠ {errors.general}
           </div>
         )}
@@ -70,34 +81,37 @@ export default function Login() {
         <div className="auth-form">
           <div className="form-group">
             <label className="form-label">University Email</label>
-            <input className={`form-input ${errors.email?'error':''}`} type="email"
+            <input className={`form-input ${errors.email ? 'error' : ''}`} type="email"
               placeholder="you@university.edu" value={form.email}
-              onChange={e => setForm(f=>({...f,email:e.target.value}))}
-              onKeyDown={e => e.key==='Enter' && handleSubmit()} />
+              onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
             {errors.email && <span className="form-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input className={`form-input ${errors.password?'error':''}`} type="password"
+            <input className={`form-input ${errors.password ? 'error' : ''}`} type="password"
               placeholder="••••••••" value={form.password}
-              onChange={e => setForm(f=>({...f,password:e.target.value}))}
-              onKeyDown={e => e.key==='Enter' && handleSubmit()} />
+              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
             {errors.password && <span className="form-error">{errors.password}</span>}
           </div>
 
           <button className="btn btn-primary btn-lg btn-full" onClick={handleSubmit} disabled={loading}>
-            {loading ? <><span className="spinner"/>Signing in…</> : '→ Sign in'}
+            {loading ? <><span className="spinner" />Signing in…</> : '→ Sign in'}
           </button>
         </div>
 
-        <div style={{marginTop:20,padding:'14px',background:'var(--bg-elevated)',borderRadius:'var(--radius-md)',border:'1px solid var(--border)'}}>
-          <div style={{fontSize:'.72rem',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'var(--text-muted)',marginBottom:6}}>Features</div>
-          <div style={{display:'flex',flexDirection:'column',gap:4}}>
-            {['📄 Upload PDFs & Notes','💬 AI-powered Q&A','🔍 Smart document search'].map(f=>(
-              <div key={f} style={{fontSize:'.8rem',color:'var(--text-secondary)'}}>{f}</div>
-            ))}
-          </div>
+        <div className="auth-features">
+          <div className="auth-features-title">Features</div>
+          {FEATURES.map(f => (
+            <div key={f.title} className="auth-feature-item">
+              <div className="auth-feature-icon" style={{ background: f.bg, border: `1px solid ${f.border}` }}>
+                {f.icon}
+              </div>
+              <span>{f.title}</span>
+            </div>
+          ))}
         </div>
 
         <p className="auth-footer">New student? <Link to="/register">Create account →</Link></p>
