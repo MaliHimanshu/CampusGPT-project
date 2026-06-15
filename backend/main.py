@@ -11,6 +11,7 @@ from app.core.database import engine, Base
 from app.api import auth, upload, chat
 from app.api.documents import router as documents_router
 from app.api.profile import router as profile_router
+from app.api.predict import router as predict_router
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
@@ -41,6 +42,7 @@ app.include_router(upload.router)
 app.include_router(chat.router)
 app.include_router(documents_router)
 app.include_router(profile_router)
+app.include_router(predict_router)
 
 
 @app.get("/")
