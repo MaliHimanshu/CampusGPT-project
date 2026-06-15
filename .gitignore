@@ -24,3 +24,10 @@ dist/
 # Test files
 test_*.py
 inspect_*.py
+
+node_modules
+__pycache__/
+*.pyc
+.gitignore
+
+backend/data/*.pdf
