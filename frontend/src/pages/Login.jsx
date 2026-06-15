@@ -35,42 +35,41 @@ export default function Login() {
       } catch {
         localStorage.setItem('user', JSON.stringify({ email: form.email }));
       }
-      toast('Welcome back!', 'success');
-      setTimeout(() => navigate('/dashboard'), 300);
+      toast('Welcome back to CampusGPT!', 'success');
+      setTimeout(() => navigate('/dashboard'), 500);
     } catch (err) {
       const msg = err.response?.data?.detail || 'Invalid email or password';
       setErrors({ general: msg });
+      toast(msg, 'error');
     } finally {
       setLoading(false);
     }
   };
 
   const FEATURES = [
-    { icon: '📄', title: 'Upload PDFs & Notes', bg: 'var(--gold-dim)', border: 'var(--gold-border)' },
-    { icon: '💬', title: 'AI-powered Q&A', bg: 'var(--teal-dim)', border: 'var(--teal-border)' },
-    { icon: '🔍', title: 'Smart document search', bg: 'var(--violet-dim)', border: 'rgba(167,139,250,0.2)' },
+    { icon: '📄', title: 'Upload Course PDFs & Syllabi', bg: 'rgba(59, 130, 246, 0.1)', border: 'rgba(59, 130, 246, 0.2)' },
+    { icon: '💬', title: 'Vector RAG Chat Q&A Sessions', bg: 'rgba(139, 92, 246, 0.1)', border: 'rgba(139, 92, 246, 0.2)' },
+    { icon: '🔮', title: 'Exam Question Predictor Insights', bg: 'rgba(59, 130, 246, 0.1)', border: 'rgba(59, 130, 246, 0.2)' },
   ];
 
   return (
     <div className="auth-page">
-      {/* Floating orbs */}
-      <div className="auth-orb auth-orb-1" />
-      <div className="auth-orb auth-orb-2" />
-      <div className="auth-orb auth-orb-3" />
-
       <ToastContainer />
       <div className="auth-card">
+        {/* Branding header */}
         <div className="auth-logo">
           <div className="auth-logo-icon">🎓</div>
           <div>
             <span className="auth-logo-text">CampusGPT</span>
-            <span className="auth-logo-badge">Beta</span>
+            <span className="auth-logo-badge">Premium</span>
           </div>
         </div>
 
-        <div className="auth-eyebrow">Student Portal</div>
-        <h1 className="auth-title">Welcome back</h1>
-        <p className="auth-subtitle">Sign in to access your AI university assistant</p>
+        <div className="auth-eyebrow">Secure Portal</div>
+        <h1 className="auth-title" style={{ background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          Welcome Back
+        </h1>
+        <p className="auth-subtitle">Sign in to study your documents with AI</p>
 
         {errors.general && (
           <div className="auth-error-banner">
@@ -81,32 +80,43 @@ export default function Login() {
         <div className="auth-form">
           <div className="form-group">
             <label className="form-label">University Email</label>
-            <input className={`form-input ${errors.email ? 'error' : ''}`} type="email"
-              placeholder="you@university.edu" value={form.email}
+            <input 
+              className={`form-input ${errors.email ? 'error' : ''}`} 
+              type="email"
+              placeholder="name@university.edu" 
+              value={form.email}
               onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-              onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()} 
+            />
             {errors.email && <span className="form-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input className={`form-input ${errors.password ? 'error' : ''}`} type="password"
-              placeholder="••••••••" value={form.password}
+            <input 
+              className={`form-input ${errors.password ? 'error' : ''}`} 
+              type="password"
+              placeholder="••••••••" 
+              value={form.password}
               onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-              onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()} 
+            />
             {errors.password && <span className="form-error">{errors.password}</span>}
           </div>
 
-          <button className="btn btn-primary btn-lg btn-full" onClick={handleSubmit} disabled={loading}>
-            {loading ? <><span className="spinner" />Signing in…</> : '→ Sign in'}
+          <button className="btn btn-primary btn-lg btn-full" onClick={handleSubmit} disabled={loading} style={{ marginTop: 8 }}>
+            {loading ? <><span className="spinner" />Entering Campus…</> : '→ Connect Portal'}
           </button>
         </div>
 
-        <div className="auth-features">
-          <div className="auth-features-title">Features</div>
+        {/* Feature list detail */}
+        <div className="auth-features" style={{ marginTop: 24, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.01)', borderRadius: 'var(--radius-md)', padding: 16 }}>
+          <div className="auth-features-title" style={{ fontSize: '.68rem', letterSpacing: '.06em', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 10 }}>
+            Features Included
+          </div>
           {FEATURES.map(f => (
-            <div key={f.title} className="auth-feature-item">
-              <div className="auth-feature-icon" style={{ background: f.bg, border: `1px solid ${f.border}` }}>
+            <div key={f.title} className="auth-feature-item" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', fontSize: '.84rem', color: 'var(--text-secondary)' }}>
+              <div className="auth-feature-icon" style={{ background: f.bg, border: `1px solid ${f.border}`, width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {f.icon}
               </div>
               <span>{f.title}</span>
@@ -114,7 +124,9 @@ export default function Login() {
           ))}
         </div>
 
-        <p className="auth-footer">New student? <Link to="/register">Create account →</Link></p>
+        <p className="auth-footer" style={{ marginTop: 20 }}>
+          New student? <Link to="/register" style={{ color: 'var(--electric-blue)', fontWeight: 600 }}>Create account →</Link>
+        </p>
       </div>
     </div>
   );

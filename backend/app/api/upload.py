@@ -4,9 +4,8 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User, Document
-from app.services.pdf_service import extract_text_from_pdf
+from app.services.pdf_service import extract_text_from_pdf, extract_images_from_pdf
 from app.services.chunk_service import chunk_text
-from app.services.embedding_service import get_embeddings
 from app.services.vector_db import get_chroma_collection
 
 router = APIRouter()
@@ -55,16 +54,58 @@ async def upload_pdf(
         db.commit()
         db.refresh(doc)
 
-        # Step 4: Embed and store
-        print(f"Generating embeddings...")
-        embeddings = get_embeddings(chunks)
+        # Step 4: Extract images from PDF
+        print(f"Extracting images from {file.filename}...")
+        images = extract_images_from_pdf(file_path, current_user.id, doc.id)
+        print(f"Found {len(images)} diagram(s)/image(s)")
+
+        # Step 5: Store chunks in ChromaDB (using local ONNX MiniLM embeddings)
+        print(f"Storing chunks in ChromaDB...")
         collection = get_chroma_collection()
         ids = [f"doc{doc.id}_chunk{i}" for i in range(len(chunks))]
-        metadatas = [{"document_id": str(doc.id), "user_id": str(current_user.id), "filename": file.filename, "chunk_index": i} for i in range(len(chunks))]
-        collection.add(documents=chunks, embeddings=embeddings, ids=ids, metadatas=metadatas)
+        metadatas = [
+            {
+                "document_id": str(doc.id),
+                "user_id": str(current_user.id),
+                "filename": file.filename,
+                "chunk_index": i,
+                "type": "text",
+            }
+            for i in range(len(chunks))
+        ]
+        collection.add(documents=chunks, ids=ids, metadatas=metadatas)
+
+        # Step 6: Store image references in ChromaDB so they can be retrieved
+        if images:
+            img_ids = []
+            img_docs = []
+            img_metas = []
+            for idx, img in enumerate(images):
+                img_ids.append(f"doc{doc.id}_img{idx}")
+                # Create a searchable text description for the image
+                img_docs.append(
+                    f"[DIAGRAM] Image/diagram from page {img['page']} of {file.filename}. "
+                    f"This is a visual figure, chart, or diagram extracted from the document."
+                )
+                img_metas.append({
+                    "document_id": str(doc.id),
+                    "user_id": str(current_user.id),
+                    "filename": file.filename,
+                    "type": "image",
+                    "image_file": img["filename"],
+                    "page": img["page"],
+                    "width": img["width"],
+                    "height": img["height"],
+                })
+            collection.add(documents=img_docs, ids=img_ids, metadatas=img_metas)
 
         print(f"Upload complete! doc_id={doc.id}")
-        return {"message": f"'{file.filename}' uploaded and indexed", "document_id": doc.id, "chunks": len(chunks)}
+        return {
+            "message": f"'{file.filename}' uploaded and indexed",
+            "document_id": doc.id,
+            "chunks": len(chunks),
+            "images": len(images),
+        }
 
     except HTTPException:
         raise

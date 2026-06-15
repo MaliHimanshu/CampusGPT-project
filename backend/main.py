@@ -1,10 +1,12 @@
 try:
     from fastapi import FastAPI  # type: ignore[reportMissingImports]
     from fastapi.middleware.cors import CORSMiddleware  # type: ignore
+    from fastapi.staticfiles import StaticFiles  # type: ignore
 except ImportError as e:
     raise ImportError(
         "fastapi is not installed. Install it with: pip install fastapi[all]"
     ) from e
+import os
 from app.core.database import engine, Base
 from app.api import auth, upload, chat
 from app.api.documents import router as documents_router
@@ -27,6 +29,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve extracted PDF images as static files
+IMAGES_DIR = os.path.join(os.path.dirname(__file__), "data", "images")
+os.makedirs(IMAGES_DIR, exist_ok=True)
+app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
 
 # Routers
 app.include_router(auth.router)

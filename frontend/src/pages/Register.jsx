@@ -38,11 +38,12 @@ export default function Register() {
     setLoading(true); setErrors({});
     try {
       await api.post('/register', { name: form.name, email: form.email, password: form.password });
-      toast('Account created! Please sign in.', 'success');
-      setTimeout(() => navigate('/'), 800);
+      toast('Account created! Navigating to login portal.', 'success');
+      setTimeout(() => navigate('/'), 1000);
     } catch (err) {
       const msg = err.response?.data?.detail || 'Registration failed';
       setErrors({ general: msg });
+      toast(msg, 'error');
     } finally {
       setLoading(false);
     }
@@ -50,24 +51,22 @@ export default function Register() {
 
   return (
     <div className="auth-page">
-      {/* Floating orbs */}
-      <div className="auth-orb auth-orb-1" />
-      <div className="auth-orb auth-orb-2" />
-      <div className="auth-orb auth-orb-3" />
-
       <ToastContainer />
-      <div className="auth-card">
+      <div className="auth-card" style={{ maxWidth: 460 }}>
+        {/* Branding header */}
         <div className="auth-logo">
           <div className="auth-logo-icon">🎓</div>
           <div>
             <span className="auth-logo-text">CampusGPT</span>
-            <span className="auth-logo-badge">Beta</span>
+            <span className="auth-logo-badge">Premium</span>
           </div>
         </div>
 
-        <div className="auth-eyebrow">Get started free</div>
-        <h1 className="auth-title">Create account</h1>
-        <p className="auth-subtitle">Your AI-powered university knowledge assistant</p>
+        <div className="auth-eyebrow">Get Started Free</div>
+        <h1 className="auth-title" style={{ background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          Create Account
+        </h1>
+        <p className="auth-subtitle">Get AI exam predictions and search tools</p>
 
         {errors.general && (
           <div className="auth-error-banner">
@@ -78,25 +77,37 @@ export default function Register() {
         <div className="auth-form">
           <div className="form-group">
             <label className="form-label">Full Name</label>
-            <input className={`form-input ${errors.name ? 'error' : ''}`} type="text"
-              placeholder="Your full name" value={form.name}
-              onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+            <input 
+              className={`form-input ${errors.name ? 'error' : ''}`} 
+              type="text"
+              placeholder="Your full name" 
+              value={form.name}
+              onChange={e => setForm(f => ({ ...f, name: e.target.value }))} 
+            />
             {errors.name && <span className="form-error">{errors.name}</span>}
           </div>
 
           <div className="form-group">
             <label className="form-label">University Email</label>
-            <input className={`form-input ${errors.email ? 'error' : ''}`} type="email"
-              placeholder="you@university.edu" value={form.email}
-              onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+            <input 
+              className={`form-input ${errors.email ? 'error' : ''}`} 
+              type="email"
+              placeholder="name@university.edu" 
+              value={form.email}
+              onChange={e => setForm(f => ({ ...f, email: e.target.value }))} 
+            />
             {errors.email && <span className="form-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input className={`form-input ${errors.password ? 'error' : ''}`} type="password"
-              placeholder="Min. 6 characters" value={form.password}
-              onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
+            <input 
+              className={`form-input ${errors.password ? 'error' : ''}`} 
+              type="password"
+              placeholder="Min. 6 characters" 
+              value={form.password}
+              onChange={e => setForm(f => ({ ...f, password: e.target.value }))} 
+            />
             {form.password && (
               <>
                 <div className="strength-bar">
@@ -104,7 +115,9 @@ export default function Register() {
                     <div key={i} className={`strength-seg ${i <= strength ? CLASSES[strength] : ''}`} />
                   ))}
                 </div>
-                <span className="strength-label">{LABELS[strength]} password</span>
+                <span className="strength-label" style={{ color: strength >= 3 ? 'var(--success)' : strength === 2 ? '#f59e0b' : 'var(--error)' }}>
+                  {LABELS[strength]} password strength
+                </span>
               </>
             )}
             {errors.password && <span className="form-error">{errors.password}</span>}
@@ -112,18 +125,24 @@ export default function Register() {
 
           <div className="form-group">
             <label className="form-label">Confirm Password</label>
-            <input className={`form-input ${errors.confirm ? 'error' : ''}`} type="password"
-              placeholder="Repeat password" value={form.confirm}
-              onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} />
+            <input 
+              className={`form-input ${errors.confirm ? 'error' : ''}`} 
+              type="password"
+              placeholder="Repeat password" 
+              value={form.confirm}
+              onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} 
+            />
             {errors.confirm && <span className="form-error">{errors.confirm}</span>}
           </div>
 
-          <button className="btn btn-primary btn-lg btn-full" onClick={handleSubmit} disabled={loading}>
-            {loading ? <><span className="spinner" />Creating account…</> : '→ Create account'}
+          <button className="btn btn-primary btn-lg btn-full" onClick={handleSubmit} disabled={loading} style={{ marginTop: 8 }}>
+            {loading ? <><span className="spinner" />Registering Account…</> : '→ Initiate Access'}
           </button>
         </div>
 
-        <p className="auth-footer">Already a student? <Link to="/">Sign in →</Link></p>
+        <p className="auth-footer" style={{ marginTop: 24 }}>
+          Already registered? <Link to="/" style={{ color: 'var(--electric-blue)', fontWeight: 600 }}>Sign in →</Link>
+        </p>
       </div>
     </div>
   );

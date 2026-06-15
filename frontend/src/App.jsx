@@ -6,6 +6,8 @@ import Chat from './pages/Chat';
 import Upload from './pages/Upload';
 import Documents from './pages/Documents';
 import Profile from './pages/Profile';
+import Predictor from './pages/Predictor';
+import NotFound from './pages/NotFound';
 import Layout from './components/Layout';
 
 const PrivateRoute = ({ children }) => {
@@ -23,8 +25,9 @@ export default function App() {
         <Route path="/chat" element={<PrivateRoute><Layout><Chat /></Layout></PrivateRoute>} />
         <Route path="/upload" element={<PrivateRoute><Layout><Upload /></Layout></PrivateRoute>} />
         <Route path="/documents" element={<PrivateRoute><Layout><Documents /></Layout></PrivateRoute>} />
+        <Route path="/predictor" element={<PrivateRoute><Layout><Predictor /></Layout></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Layout><Profile /></Layout></PrivateRoute>} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
